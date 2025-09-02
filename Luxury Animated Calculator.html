@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luxury Animated Calculator</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at top left, #a18cd1, #fbc2eb, #fad0c4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+    .calculator {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 25px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      animation: floaty 4s ease-in-out infinite alternate;
+      position: relative;
+    }
+    @keyframes floaty {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-10px) scale(1.02); }
+    }
+    .calculator::before,
+    .calculator::after {
+      content: "";
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      top: -25%;
+      left: -25%;
+      background: conic-gradient(from 0deg, #fbc2eb, #a6c0fe, #fbc2eb);
+      z-index: -1;
+      animation: rotate 10s linear infinite;
+      border-radius: 50%;
+      opacity: 0.2;
+    }
+    .calculator::after {
+      animation-direction: reverse;
+      opacity: 0.1;
+    }
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+    .display {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 2em;
+      text-align: right;
+      color: #fff;
+      box-shadow: inset 0 0 15px rgba(255,255,255,0.4);
+      animation: pulse 3s infinite alternate;
+    }
+    @keyframes pulse {
+      0% { text-shadow: 0 0 10px #fff, 0 0 20px #fbc2eb; }
+      100% { text-shadow: 0 0 20px #a6c0fe, 0 0 40px #fff; }
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 70px);
+      gap: 12px;
+    }
+    .buttons button {
+      padding: 18px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .buttons button:hover {
+      transform: scale(1.1) rotate(-2deg);
+      box-shadow: 0 0 25px #fff;
+    }
+    .buttons button:active {
+      transform: scale(0.95) rotate(1deg);
+      box-shadow: 0 0 15px #fbc2eb;
+    }
+    .buttons button::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.6);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s ease, height 0.4s ease;
+    }
+    .buttons button:active::after {
+      width: 160px;
+      height: 160px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button onclick="clearDisplay()">C</button>
+      <button onclick="append('/')">÷</button>
+      <button onclick="append('*')">×</button>
+      <button onclick="delChar()">DEL</button>
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button onclick="append('-')">−</button>
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button onclick="append('+')">+</button>
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    function append(val) {
+      if (display.innerText === '0') display.innerText = '';
+      display.innerText += val;
+    }
+    function clearDisplay() {
+      display.innerText = '0';
+    }
+    function delChar() {
+      display.innerText = display.innerText.slice(0, -1) || '0';
+    }
+    function calculate() {
+      try {
+        let res = Function('return ' + display.innerText.replace(/÷/g, '/').replace(/×/g, '*'))();
+        display.innerText = res;
+        burstConfetti();
+      } catch {
+        display.innerText = 'Error';
+      }
+    }
+    function burstConfetti() {
+      for (let i = 0; i < 25; i++) {
+        const conf = document.createElement('div');
+        conf.style.position = 'fixed';
+        conf.style.left = Math.random() * window.innerWidth + 'px';
+        conf.style.top = Math.random() * window.innerHeight + 'px';
+        conf.style.width = '10px';
+        conf.style.height = '10px';
+        conf.style.background = `hsl(${Math.random()*360}, 100%, 70%)`;
+        conf.style.borderRadius = '50%';
+        conf.style.pointerEvents = 'none';
+        conf.style.opacity = 1;
+        document.body.appendChild(conf);
+        setTimeout(()=> {
+          conf.style.transition = 'all 1.2s ease';
+          conf.style.top = parseInt(conf.style.top) + 150 + 'px';
+          conf.style.opacity = 0;
+        }, 20);
+        setTimeout(()=> conf.remove(), 1500);
+      }
+    }
+  </script>
+</body>
+</html>
